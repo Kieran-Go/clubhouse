@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clubhouse - Sign Up</title>
+</head>
+<body>
+    <h1>Join the clubhouse:</h1>
+    <form action="/sign-up" method="POST">
+
+        <label for="first_name">First Name:</label>
+        <input id="first_name" name="first_name" type="text" value="<%= data?.first_name || '' %>" required>
+        <% if (errors) {
+            console.log(errors);
+            const err = errors.find(e => e.path === "first_name");
+            if (err) { %>
+                <p style="color:red;"><%= err.msg %></p>
+        <% } } %>
+
+        <label for="last_name">Last Name:</label>
+        <input id="last_name" name="last_name" type="text" value="<%= data?.last_name || '' %>" required>
+        <% if (errors) { 
+            const err = errors.find(e => e.path === "last_name");
+            if (err) { %>
+                <p style="color:red;"><%= err.msg %></p>
+        <% } } %>
+
+        <label for="username">Username:</label>
+        <input id="username" name="username" type="text" value="<%= data?.username || '' %>" required>
+        <% if (errors) { 
+            const err = errors.find(e => e.path === "username");
+            if (err) { %>
+                <p style="color:red;"><%= err.msg %></p>
+        <% } } %>
+
+        <label for="password">Password:</label>
+        <input id="password" name="password" type="password" required>
+        <% if (errors) { 
+            const err = errors.find(e => e.path === "password");
+            if (err) { %>
+                <p style="color:red;"><%= err.msg %></p>
+        <% } } %>
+
+        <label for="confirm_password">Confirm Password:</label>
+        <input id="confirm_password" name="confirm_password" type="password" required>
+        <% if (errors) { 
+            const err = errors.find(e => e.path === "confirm_password");
+            if (err) { %>
+                <p style="color:red;"><%= err.msg %></p>
+        <% } } %>
+
+        <button type="submit">Sign up</button>
+    </form>
+
+    <a href="/"><button>Go back</button></a>
+</body>
+</html>
