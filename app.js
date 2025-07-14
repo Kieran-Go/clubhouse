@@ -10,13 +10,14 @@ app.set("view engine", "ejs"); // Set view engine to ejs
 app.use(express.urlencoded({ extended: false })); // Parses URL-encoded bodies (such as HTML forms) into req.body
 
 // ---------- SESSIONS ----------
+// Initialize session
 const session = require("express-session");
 
 // Connect session to db using pgSession
 const pgSession = require("connect-pg-simple")(session);
 const pgPool = new pg.Pool({ connectionString: process.env.DATABASE_URL});
 
-// Initialize session
+// Use session
 app.use(session({
     store: new pgSession({ pool: pgPool }),
     secret: process.env.SESSION_SECRET,
@@ -29,6 +30,12 @@ app.use(session({
 const passport = require("./config/passport");
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Custom middleware: make the logged-in user available in all views
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+});
 
 // ----- USE ROUTES -----
 const clubhouseRouter = require("./routes/clubhouse");

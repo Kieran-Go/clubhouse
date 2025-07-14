@@ -23,4 +23,8 @@ module.exports = {
         );
         return rows[0];
     },
+
+    giveMembership: async (userId) => {
+        await pool.query("UPDATE users SET is_member = TRUE WHERE id = $1", [userId]);
+    }
 }

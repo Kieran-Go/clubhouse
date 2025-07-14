@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clubhouse - Join the Club</title>
+</head>
+<body>
+    <h1>Joining the Club</h1>
+    <p><strong>It's simple:</strong> You just need to enter the secret passcode, and you will become a true member of the clubhouse!</p>
+
+    <form action="/join-club" method="POST">
+        <label for="passcode">Passcode:</label>
+        <input id="passcode" name="passcode" required>
+        <button type="submit">Confirm</button>
+    </form>
+
+    <% if(error) { %>
+        <p style="color: red;"><%= error %></p>
+        <p><strong>Hint:</strong> The correct passcode is NOT the one you just entered!</p>
+   <% } %>
+</body>
+</html>

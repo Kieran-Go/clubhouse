@@ -1,11 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clubhouse - Home</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clubhouse - Home</title>
 </head>
 <body>
-    <a href="/sign-up"> <button>Sign Up</button> </a>
+  <h1>Welcome to the message board!</h1>
+
+  <% if (currentUser) { %>
+    <h3>Logged in as <%= currentUser.username %></h3>
+
+    <% if (currentUser.is_member) { %>
+      <h4>You are a true member!</h4>
+    <% } else { %>
+      <a href="/join-club"><button>Join the club!</button></a>
+    <% } %>
+
+    <a href="/log-out"><button>Log out</button></a>
+
+  <% } else { %>
+    <h3>You are not logged in</h3>
+    <a href="/sign-up"><button>Sign up</button></a>
+    <a href="/log-in"><button>Log in</button></a>
+  <% } %>
 </body>
 </html>
