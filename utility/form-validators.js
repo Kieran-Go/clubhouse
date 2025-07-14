@@ -14,6 +14,23 @@ const signUpValidator = [
     }),
 ];
 
+const messageValidator = [
+  body("title")
+    .trim()
+    .notEmpty()
+    .withMessage("Title is required.")
+    .isLength({ max: 100 })
+    .withMessage("Title must be 100 characters or fewer."),
+    
+  body("content")
+    .trim()
+    .notEmpty()
+    .withMessage("Content is required.")
+    .isLength({ max: 1000 })
+    .withMessage("Content must be 1000 characters or fewer."),
+];
+
 module.exports = {
   signUpValidator,
+  messageValidator,
 };

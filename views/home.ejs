@@ -12,7 +12,9 @@
     <h3>Logged in as <%= currentUser.username %></h3>
 
     <% if (currentUser.is_member) { %>
-      <h4>You are a true member!</h4>
+        <% if(!currentUser.is_admin) { %>
+            <a href="/become-admin"><button>Become an Admin!</button></a>
+        <% } %>
     <% } else { %>
       <a href="/join-club"><button>Join the club!</button></a>
     <% } %>
@@ -23,6 +25,60 @@
     <h3>You are not logged in</h3>
     <a href="/sign-up"><button>Sign up</button></a>
     <a href="/log-in"><button>Log in</button></a>
+  <% } %>
+
+  <div class="message-container">
+    <% for(const msg of messages) { %>
+        <div class="message" style="border: solid 1px black; padding: 10px; margin-top: 20px;">
+            <% if(currentUser && currentUser.is_member) { %>
+                <p><strong>Author:</strong> <%= msg.username %></p>
+            <% } %>
+            <h3><%= msg.title %></h3>
+            <p><%= msg.content %></p>
+            <% if(currentUser && currentUser.is_member) { %>
+                <p style="color: gray;"><small><%= msg.timestamp %></small></p>
+            <% } %>
+
+            <% if(currentUser && currentUser.is_admin) { %>
+                <form action="/delete-message" method="POST" style="margin-top: 10px;">
+                    <input type="hidden" name="message_id" value="<%= msg.id %>">
+                    <button type="submit" style="color: white; background-color: red;">Delete</button>
+                </form>
+            <% } %>
+
+        </div>
+    <% } %>
+  </div>
+
+  <% if(currentUser) { %>
+    <form action="new-message" method="POST" style="border: solid black 1px; padding: 10px; margin-top: 10px; max-width: 500px;">
+        <h3>Write a message</h3>
+
+        <div style="margin-bottom: 1rem;">
+            <label for="title">Title:</label><br>
+            <input id="title" name="title" type="text" required>
+            <% if(msgErrors) {
+                console.log(msgErrors)
+                const err = msgErrors.find(e => e.path === "title");
+                if(err) { %>
+                    <p style="color: red;"><%= err.msg %></p>
+               <% } %>
+            <% } %>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+            <label for="content">Content:</label><br>
+            <textarea id="content" name="content" rows="5" cols="40" required style="max-width:490px;"></textarea>
+            <% if(msgErrors) {
+                const err = msgErrors.find(e => e.path === "content");
+                if(err) { %>
+                    <p style="color: red;"><%= err.msg %></p>
+               <% } %>
+            <% } %>
+        </div>
+
+        <button type="submit">Send</button>
+    </form>
   <% } %>
 </body>
 </html>

@@ -4,12 +4,14 @@ const { validationResult } = require("express-validator");
 const router = Router();
 const passport = require("passport");
 const controller = require("../controllers/clubhouseController");
-const { signUpValidator } = require("../utility/form-validators");
+const { signUpValidator, messageValidator } = require("../utility/form-validators");
 
 
 // Render index page
-router.get("/", (req, res) => {
-    res.render("home", { user: req.user });
+router.get("/", async (req, res) => {
+    // Get the messages from the db
+    const messages = await controller.getAllMessages();
+    res.render("home", { user: req.user, messages: messages, msgErrors: null });
 });
 
 // Sign up
@@ -85,6 +87,63 @@ router.post("/join-club", async (req, res, next) => {
     
     try {
         await controller.giveMembership(req.user.id);
+        res.redirect("/");
+    } catch (err) {
+        next(err);
+    }
+});
+
+// 'Become admin' routes
+router.get("/become-admin", (req, res) => {
+    res.render("become-admin", { error: null });
+});
+
+router.post("/become-admin", async (req, res, next) => {
+    const passcode = process.env.ADMIN_PASSWORD;
+    if(passcode != req.body.passcode) return res.render("become-admin", { error: "Incorrect passcode"});
+    
+    // Must be logged in
+    if (!req.user) return res.redirect("/log-in");
+    
+    try {
+        await controller.makeAdmin(req.user.id);
+        res.redirect("/");
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Message routes
+router.post("/new-message", messageValidator, async (req, res, next) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const messages = await controller.getAllMessages();
+        return res.status(400).render("home", { user: req.user, messages: messages, msgErrors: errors.array() });
+    }
+
+    // Retrieve form data and current user's id
+    const { title, content } = req.body;
+    const userId = req.user.id;
+
+    try{
+        // Create new message with data
+        const newMsg = await controller.createMessage(title, content, userId);
+        console.log(`New message with the title '${newMsg.title}' has been added`);
+
+        // Re-render page
+        res.redirect("/");
+    }
+    catch(err) { return next(err) }
+})
+
+router.post("/delete-message", async (req, res, next) => {
+    // Prevent non-admins from deleting message
+    if (!req.user || !req.user.is_admin) return res.status(403).send("Forbidden");
+
+    const messageId = req.body.message_id;
+    try {
+        await controller.deleteMessage(messageId);
         res.redirect("/");
     } catch (err) {
         next(err);
